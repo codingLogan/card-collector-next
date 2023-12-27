@@ -2,42 +2,10 @@
 
 import { useEffect, useState } from 'react'
 
-const SORT_OPTION = {
-    DEFAULT: "number",
-    TYPE: "supertype",
-    POKEDEX: "nationalPokedexNumbers",
-    ENERGY_TYPE: "types" 
-}
-
-const SUPERTYPE = {
-    POKEMON: "Pokémon",
-    TRAINER: "Trainer",
-    ENERGY: "Energy"
-}
-
-interface Card {
-    id: string,
-    number: number,
-    name: string,
-    images: {
-        small: string,
-    },
-    nationalPokedexNumbers: number[],
-    supertype: string
-    types: string[]
-}
-
-function resolveModule(module: {default: Card[]}): Array<Card> {
-    return module.default.map(card => ({
-        name: card.name,
-        id: card.id,
-        number: card.number,
-        images: card.images,
-        nationalPokedexNumbers: card.nationalPokedexNumbers,
-        supertype: card.supertype,
-        types: card.types
-    }))
-}
+import { SORT_OPTION } from '@/app/sorter/constants'
+import { sortCards } from '@/app/sorter/sorter'
+import { Card } from '@/app/types'
+import { getCardData } from '@/app/fetcher'
 
 export default function Page({params}: {params: {set: string}}) {
     const [isLoading, setIsLoading] = useState(true)
@@ -45,58 +13,13 @@ export default function Page({params}: {params: {set: string}}) {
     const [sortArgs, setSortArgs] = useState<any[]>([SORT_OPTION.POKEDEX])
 
     useEffect(() => {
-        import(`../../../data/cards/${params.set}.json`).then(module => {
-            const cards = resolveModule(module)
-
+        getCardData(params.set).then(cards => {
             sortCards(cards, sortArgs)
             setCardData(cards)
             
             setIsLoading(false)
         })
     }, [])
-
-    function sortCards(cards: Card[], sortArgs: any) {
-        let i = 0
-        for (i = 0; i < sortArgs.length; i++) {
-            const sortOption = sortArgs[i]
-
-            cards.sort((a: any, b: any) => {
-                let aValue = a[sortOption]
-                let bValue = b[sortOption]
-                
-                // Handle any complex sort objects
-                if (sortOption === SORT_OPTION.POKEDEX) {
-                    if (a.supertype !== SUPERTYPE.POKEMON || b.supertype !== SUPERTYPE.POKEMON) return 0
-                    // TODO does Johto dex or any other pokedex come into play?
-                    // Assume national dex is the first entry
-                    aValue = a[sortOption][0]
-                    bValue = b[sortOption][0]
-                }
-
-                // Keep this separate from the above POKEDEX check, the energy type structure may change for different reasons
-                if (sortOption === SORT_OPTION.ENERGY_TYPE) {
-                    if (a.supertype !== SUPERTYPE.POKEMON || b.supertype !== SUPERTYPE.POKEMON) return 0
-                    // TODO does Johto dex or any other pokedex come into play?
-                    // Assume national dex is the first entry
-                    aValue = a[sortOption][0]
-                    bValue = b[sortOption][0]
-                }
-
-                if (sortOption === SORT_OPTION.DEFAULT) {
-                    aValue = Number(a[sortOption])
-                    aValue = Number(b[sortOption])
-                }
-
-                if (aValue === bValue) {
-                    return 0
-                } else if (aValue < bValue) {
-                    return -1
-                } else {
-                    return 1
-                }
-            })
-        }
-    }
 
     function cardDisplayName(card: Card) {
         return `${card.name} (${card.id.split('-')[1]})`
