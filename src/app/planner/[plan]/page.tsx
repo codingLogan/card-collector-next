@@ -49,17 +49,14 @@ export default function Page({params}: {params: { plan: string}}) {
     }
     
     return (
-        <main className="flex min-h-screen flex-col items-center p-16">
+        <main className="flex min-h-screen flex-col items-center py-16 px-2">
             <h1 className="font-bold text-3xl mb-8">Custom Collection</h1>
             <h2 className="font-bold text-2xl mb-8">{collectionName}</h2>
 
             <section
                 style={{
-                display: "flex",
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '24px'
+                    display: "grid",
+                    gridTemplateColumns: 'repeat(3, 1fr)',
                 }}
             >
                 {cardData.map(card =>
@@ -77,10 +74,9 @@ export default function Page({params}: {params: { plan: string}}) {
                     className="hover:bg-gray-300"
                     style={{
                         width: "100%",
-                        padding: "16px",
+                        // padding: "16px",
                     }}
                     >
-                    <h2 style={{textAlign: "center"}}>{cardDisplayName(card)}</h2>
                     <img src={card.images.small}/>
                     </span>
                 </div>)}
