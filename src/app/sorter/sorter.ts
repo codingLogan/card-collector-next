@@ -1,5 +1,11 @@
 import { SORT_OPTION, SUPERTYPE } from "./constants"
 
+const TYPE_SORT_ORDER = {
+    [SUPERTYPE.POKEMON]: 1,
+    [SUPERTYPE.TRAINER]: 2,
+    [SUPERTYPE.ENERGY]: 3
+}
+
 export function sortCards(cards: any[], sortArgs: any) {
     let i = 0
     for (i = 0; i < sortArgs.length; i++) {
@@ -25,6 +31,11 @@ export function sortCards(cards: any[], sortArgs: any) {
                 // Assume national dex is the first entry
                 aValue = a[sortOption][0]
                 bValue = b[sortOption][0]
+            }
+
+            if (sortOption === SORT_OPTION.TYPE) {
+                aValue = TYPE_SORT_ORDER[a.supertype]
+                bValue = TYPE_SORT_ORDER[b.supertype]
             }
 
             if (sortOption === SORT_OPTION.DEFAULT) {
