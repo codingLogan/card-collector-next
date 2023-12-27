@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import sets from '../../data/sets/sets.json'
 
 export default function Page() {
@@ -33,10 +34,14 @@ export default function Page() {
               style={{
                 width: "100%",
                 padding: "16px",
-              }}
+            }}
             >
+              <Link
+                href={`/sets/${set.id}`}
+              >
               <h2 style={{textAlign: "center"}}>{`${set.name} ${set.date}`}</h2>
               <img src={set.image} style={{height: "60px"}}/>
+            </Link>
             </button>
           </div>)}
         <div>
