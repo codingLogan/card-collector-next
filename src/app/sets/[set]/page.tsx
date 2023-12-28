@@ -15,8 +15,6 @@ export default function Page({params}: {params: {set: string}}) {
     const [sortArgs, setSortArgs] = useState<any[]>([SORT_OPTION.DEFAULT])
     const userCards = getUsersCards()
 
-    console.log({userCards})
-
     useEffect(() => {
         getCardData(params.set).then(cards => {
             if (sortArgs.length > 0) {

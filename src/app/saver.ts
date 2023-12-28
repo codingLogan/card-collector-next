@@ -12,6 +12,8 @@ function readData(key:string) {
     return JSON.parse(rawData)
 }
 
+// ----------------------------------------------------------------------------
+// Card saving
 export function getUsersCards() {
     const cards = readData('cards')
 
@@ -42,4 +44,44 @@ export function removeCard(cardId: string) {
     // For now, remove all instances of a card by unchecking the box
     delete cards[cardId]
     saveData('cards', cards)
+}
+
+// ----------------------------------------------------------------------------
+// Plan saving
+
+export function getPlans(): any[] {
+    const plans = readData('plans')
+
+    if ( !plans) {
+        saveData('plans', [])
+        return []
+    }
+
+    return plans
+}
+
+export function createPlan(name: string, options: {
+    sort?: string[],
+    sets?: string[]
+}) {
+    const plans = getPlans()
+
+    // If the plan already exists... Don't let the user overwrite
+    if (plans.find(plan => plan.name === name) !== undefined) {
+        return null
+    }
+
+    plans.push({
+        id: name.trim().toLowerCase().replace(/[^a-z]/g, ''),
+        name,
+        options
+    })
+
+    saveData('plans', plans)
+}
+
+export function getPlan(id: string): {id: string, name: string, options: {sets: string[], sort: string[]}} {
+    const plans = getPlans()
+
+    return plans.find(plan => plan.id === id)
 }
