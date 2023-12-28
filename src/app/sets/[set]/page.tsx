@@ -7,15 +7,22 @@ import { sortCards } from '@/app/sorter/sorter'
 import { Card } from '@/app/types'
 import { getCardData } from '@/app/fetcher'
 import CardComponent from '@/app/card/CardComponent'
+import { collectCard, getUsersCards, removeCard } from '@/app/saver'
 
 export default function Page({params}: {params: {set: string}}) {
     const [isLoading, setIsLoading] = useState(true)
     const [cardData, setCardData] = useState<Card[]>([])
-    const [sortArgs, setSortArgs] = useState<any[]>([SORT_OPTION.POKEDEX])
+    const [sortArgs, setSortArgs] = useState<any[]>([SORT_OPTION.DEFAULT])
+    const userCards = getUsersCards()
+
+    console.log({userCards})
 
     useEffect(() => {
         getCardData(params.set).then(cards => {
-            sortCards(cards, sortArgs)
+            if (sortArgs.length > 0) {
+                sortCards(cards, sortArgs)
+            }
+
             setCardData(cards)
             
             setIsLoading(false)
@@ -39,7 +46,20 @@ export default function Page({params}: {params: {set: string}}) {
                     alignItems: 'center',
                 }}
             >
-                {cardData.map(card =><CardComponent card={card} />)}
+                {cardData.map(card =><CardComponent
+                    key={card.id}
+                    card={card}
+                    owned={!!userCards[card.id]}
+                    cardClickHandler={(event) => {
+                        if ( event.target.checked === true) {
+                            // Add to collection if the box has been checked
+                            collectCard(event.target.name)
+                        } else {
+                            // Remove from the collection if the box was unchecked
+                            removeCard(event.target.name)
+                        }
+                    }}
+                />)}
             </section>
         </main>
     )
