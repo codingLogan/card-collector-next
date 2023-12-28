@@ -6,6 +6,7 @@ import { SORT_OPTION } from '@/app/sorter/constants'
 import { sortCards } from '@/app/sorter/sorter'
 import { Card } from '@/app/types'
 import { getCardData } from '@/app/fetcher'
+import CardComponent from '@/app/card/CardComponent'
 
 // Assumption of a hard codeed plan
 // The user wants to combine the first 3 base sets into one sortable collection
@@ -40,10 +41,6 @@ export default function Page({params}: {params: { plan: string}}) {
         })
     }, [])
 
-    function cardDisplayName(card: Card) {
-        return `${card.name} (${card.id.split('-')[1]})`
-    }
-
     if (isLoading) {
         return <main className="flex min-h-screen flex-col items-center p-16">Loading...</main>
     }
@@ -59,29 +56,7 @@ export default function Page({params}: {params: { plan: string}}) {
                     gridTemplateColumns: 'repeat(3, 1fr)',
                 }}
             >
-                {cardData.map(card =>
-                <div
-                    key={card.id}
-                    style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    display: "flex",
-                    flexDirection: "column",
-                    width: '100%'
-                    }}
-                >
-                    <span
-                    className="hover:bg-gray-300"
-                    style={{
-                        width: "100%",
-                        // padding: "16px",
-                    }}
-                    >
-                    <img src={card.images.small}/>
-                    </span>
-                </div>)}
-                <div>
-                </div>
+                {cardData.map(card =><CardComponent card={card} options={{useName: false}} />)}
             </section>
         </main>
     )

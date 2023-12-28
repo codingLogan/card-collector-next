@@ -6,6 +6,7 @@ import { SORT_OPTION } from '@/app/sorter/constants'
 import { sortCards } from '@/app/sorter/sorter'
 import { Card } from '@/app/types'
 import { getCardData } from '@/app/fetcher'
+import CardComponent from '@/app/card/CardComponent'
 
 export default function Page({params}: {params: {set: string}}) {
     const [isLoading, setIsLoading] = useState(true)
@@ -21,10 +22,6 @@ export default function Page({params}: {params: {set: string}}) {
         })
     }, [])
 
-    function cardDisplayName(card: Card) {
-        return `${card.name} (${card.id.split('-')[1]})`
-    }
-
     if (isLoading) {
         return <main className="flex min-h-screen flex-col items-center p-16">Loading...</main>
     }
@@ -36,37 +33,13 @@ export default function Page({params}: {params: {set: string}}) {
 
             <section
                 style={{
-                display: "flex",
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '24px'
+                    display: "flex",
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                 }}
             >
-                {cardData.map(card =>
-                <div
-                    key={card.id}
-                    style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    display: "flex",
-                    flexDirection: "column",
-                    width: '100%'
-                    }}
-                >
-                    <span
-                    className="hover:bg-gray-300"
-                    style={{
-                        width: "100%",
-                        padding: "16px",
-                    }}
-                    >
-                    <h2 style={{textAlign: "center"}}>{cardDisplayName(card)}</h2>
-                    <img src={card.images.small}/>
-                    </span>
-                </div>)}
-                <div>
-                </div>
+                {cardData.map(card =><CardComponent card={card} />)}
             </section>
         </main>
     )
