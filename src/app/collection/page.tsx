@@ -2,17 +2,15 @@
 
 import { useEffect, useState } from "react"
 import CardComponent from "../card/CardComponent"
-import { getUsersCards } from "../saver"
 import { getCardData } from "../fetcher"
-import { sortCards } from "../sorter/sorter"
 import { Card } from "../types"
+import { hasCard } from "../card/utils"
+import { useUserCards } from "../hooks"
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(true)
-
-  const [userCards, setCards] = useState([])
-  const [inProgressSets, setInProgressSets] = useState<any>([])
   const [cardData, setCardData] = useState<Card[]>([])
+  const userCards = useUserCards()
 
   function getInProgressSets(cards) {
     const setOfSets = new Set()
@@ -26,12 +24,8 @@ export default function Page() {
   }
 
   useEffect(() => {
-    const userCards = getUsersCards()
-    setCards(userCards)
 
     const inProgressSets = getInProgressSets(userCards)
-    setInProgressSets(inProgressSets)
-
     const promises: any[] = []
     inProgressSets.forEach(setId => promises.push(getCardData(setId)))
 
@@ -45,7 +39,7 @@ export default function Page() {
         
         setIsLoading(false)
     })
-  }, [])
+  }, [userCards])
 
   if (isLoading) {
     return <main className="flex min-h-screen flex-col items-center p-16">Loading...</main>
@@ -67,7 +61,7 @@ export default function Page() {
                   key={card.id}
                   card={card}
                   options={{useName: false}}
-                  owned={true}
+                  owned={hasCard(card.id, userCards)}
                   />
                 )}
             </section>

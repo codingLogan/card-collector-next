@@ -8,12 +8,15 @@ import { Card } from '@/app/types'
 import { getCardData } from '@/app/fetcher'
 import CardComponent from '@/app/card/CardComponent'
 import { getPlan } from '@/app/saver'
+import { useUserCards } from '@/app/hooks'
+import { hasCard } from '@/app/card/utils'
 
 
 export default function Page({params}: {params: { plan: string}}) {
     const [plan, setPlan] = useState<any>()
     const [isLoading, setIsLoading] = useState(true)
     const [cardData, setCardData] = useState<Card[]>([])
+    const userCards = useUserCards()
 
     useEffect(() => {
         const plan = getPlan(params.plan)
@@ -30,7 +33,7 @@ export default function Page({params}: {params: { plan: string}}) {
             
             setIsLoading(false)
         })
-    }, [])
+    }, [userCards])
 
     if (isLoading) {
         return <main className="flex min-h-screen flex-col items-center p-16">Loading...</main>
@@ -47,7 +50,12 @@ export default function Page({params}: {params: { plan: string}}) {
                     gridTemplateColumns: 'repeat(3, 1fr)',
                 }}
             >
-                {cardData.map(card =><CardComponent key={card.id} card={card} options={{useName: false}} />)}
+                {cardData.map(card =><CardComponent
+                    key={card.id}
+                    card={card}
+                    owned={hasCard(card.id, userCards)}
+                    options={{useName: false}}
+                />)}
             </section>
         </main>
     )
